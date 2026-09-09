@@ -75,3 +75,28 @@ jsonlite::fromJSON("https://isa401-import-heist.vercel.app/api/finish?code=6&sea
 
 ```
 
+```{r subsetting_practice}
+campus = jsonlite::fromJSON(
+  "https://isa401-find-your-seat.vercel.app/campus.json")
+
+names(campus) # shows the named elements within a list (or vector) or the cols in a data frame
+
+campus[1]
+
+campus[2]
+campus[2][2]
+
+campus[[2]][[2]]
+
+fsb<-campus$Farmer
+names(fsb)
+fsb[[1]]
+fsb[[2]]
+fsb[[3]]
+fsb[[4]]
+fsb[[5]]
+fsb[[6]]
+fsb[[7]]
+fsb[[8]][[3]][[3]][1:4,]
+```
+
