@@ -1,0 +1,51 @@
+---
+title: "Homework04"
+author: "Cameron Neidrich"
+date: "2026-10-09"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    numbered_sections: true
+    code_download: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r q1}
+con = DBI::dbConnect(RSQLite::SQLite(), "../data/midwest_airbnb.db")
+listings = DBI::dbReadTable(con, "listings")
+nrow(listings)
+nrow(filter(listings$city,"Columbus"))
+library(dplyr)
+
+listings %>% 
+  filter(city == "Twin Cities") %>% 
+  nrow()
+
+DBI::dbReadTable(con, "listings")
+
+
+library(dplyr)
+
+chicago_listings <- listings %>% 
+  filter(city == "Chicago") %>% 
+  arrange(desc(price))
+head(chicago_listings,1)
+
+
+sum(distinct(chicago_listings$neighbourhood))
+n_distinct(chicago_listings$neighbourhood)
+
+sum(count(listings$host_is_superhost,'t'))
+
+sum(listings$host_is_superhost == "t", na.rm = TRUE)
+sum(listings$price > 1000)
+```
+
+
+
+
