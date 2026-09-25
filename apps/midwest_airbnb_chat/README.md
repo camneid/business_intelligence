@@ -6,6 +6,16 @@ A twelve-line [querychat](https://github.com/posit-dev/querychat) app built in I
 
 **Live app:** https://midwest-airbnb-chat1.onrender.com/
 
+Question 1:
+What are the top 10 most expensive listings in Chicago?
+
+
+Question 2: 
+What are the top 8 hosts with the highest average rating?
+
+Question 3:
+What are the 15 listings with the lowest reviews in Chicago?
+
 ---
 
 ## What is this app?
