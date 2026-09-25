@@ -22,7 +22,7 @@ qc = querychat::querychat(
 
 
 ui = page_sidebar(
-  title = "Airbnb Listing Explorer",
+  title = "Airbnb Listing Explorer Chatbot",
   theme = bs_theme(
     primary = "#5B7DB1",
     bg = "#EAF2FB",
@@ -47,9 +47,7 @@ ui = page_sidebar(
     
     accordion_panel(
       "About",
-      "Airbnb Listing Explorer; built by Cameron. 
-      Explore 14,887 Airbnb listings from Chicago, Columbus, 
-      and the Twin Cities using natural-language questions."
+      "Airbnb Listing Explorer; built by Cameron Neidrich. Explore 14,887 Airbnb listings from Chicago, Columbus, and the Twin Cities using natural-language questions. Data comes from Inside Airbnb, data snapshots are (Chicago 2026-07-20, Columbus 2026-07-23, Twin Cities 2026-07-21)"
     )
   )
 )
