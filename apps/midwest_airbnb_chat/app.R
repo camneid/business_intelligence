@@ -24,7 +24,11 @@ qc = querychat::querychat(
 ui = page_sidebar(
   title = "Airbnb Listing Explorer",
   theme = bs_theme(
-    primary = "#5B7DB1"
+    primary = "#5B7DB1",
+    bg = "#EAF2FB",
+    fg = "#243447",
+    base_font = font_google("Lato")
+    
   ),
   sidebar = qc$sidebar(width = 350),
   
