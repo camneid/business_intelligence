@@ -8,13 +8,16 @@ A twelve-line [querychat](https://github.com/posit-dev/querychat) app built in I
 
 Question 1:
 What are the top 10 most expensive listings in Chicago?
+<img width="1911" height="901" alt="Screenshot 2026-09-25 001016" src="https://github.com/user-attachments/assets/9f82357a-29b6-4c44-8b54-1f1891f6550f" />
 
 
 Question 2: 
 What are the top 8 hosts with the highest average rating?
+<img width="1907" height="894" alt="Screenshot 2026-09-25 001323" src="https://github.com/user-attachments/assets/f838385e-cbc4-4d23-ab3f-0876ccf9ab9d" />
 
 Question 3:
 What are the 15 listings with the lowest reviews in Chicago?
+<img width="1904" height="892" alt="image" src="https://github.com/user-attachments/assets/aa480f41-3531-4ebe-ad7f-487f505056ad" />
 
 ---
 
