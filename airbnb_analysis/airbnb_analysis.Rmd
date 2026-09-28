@@ -1,0 +1,188 @@
+---
+title: "Airbnb Analysis"
+date: "2026-09-27"
+output: 
+  html_document:
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+con = DBI::dbConnect(RSQLite::SQLite(), "../data/midwest_airbnb_extended.db")
+listings     = DBI::dbReadTable(con, "listings") |> tibble::as_tibble()
+availability = DBI::dbReadTable(con, "availability_monthly") |> tibble::as_tibble()
+reviews      = DBI::dbReadTable(con, "reviews_monthly") |> tibble::as_tibble()
+DBI::dbDisconnect(con)
+
+```
+
+## Task 1
+```{r task1}
+
+# Get host counts and add them to a new data frame including the # of listings
+host_counts <- listings |> dplyr::count(host_id, name = "n_listings")
+listings_with_counts <- listings |> 
+  dplyr::left_join(host_counts, by = "host_id")
+
+
+# Counting how many hosts have more than 10 listings
+A1 <- host_counts |> 
+  dplyr::filter(n_listings >= 10) |> 
+  nrow()
+A1
+
+# Filter that new df to just chicago and calculate the mean
+A2<-listings_with_counts |> dplyr::filter(city == "Chicago") |> 
+  dplyr::summarize(pct=mean(n_listings >= 10) * 100)
+A2
+
+```
+
+## Task 2
+```{r task2}
+
+#Filter down the original data set to the specific criteria
+task2filtered <- listings |> 
+  dplyr::filter(room_type == "Entire home/apt", accommodates >=4, number_of_reviews > 10, review_scores_rating > 4.8) |> 
+  dplyr::mutate(price_per_person = price / accommodates) |> 
+  dplyr::group_by(city,neighbourhood) |> 
+  dplyr::summarize(
+    n = dplyr::n(),
+    median_price_per_person = median(price_per_person),
+    .groups = "drop_last"
+  ) |>
+  dplyr::filter(n > 20,city == "Columbus")
+
+# Arrange the data to show the specific answer
+A3 <- task2filtered |>  dplyr::arrange(median_price_per_person) |> 
+  head(1)
+A3
+```
+
+## Task 3
+```{r task3}
+
+# Filter data on specified criteria using a singular summarze
+task3filtered <- listings |> 
+  dplyr::group_by(city, room_type) |> 
+  dplyr::summarize(
+    dplyr::across(.cols = c(price,reviews_per_month,estimated_revenue_l365d), .fns = ~ median(.x, na.rm = TRUE)),
+    .groups = "drop_last"
+  )
+
+# Specifically choose twin cities and entire home group
+A4 <- task3filtered |> 
+  dplyr::filter(city == "Twin Cities", room_type == "Entire home/apt")
+A4
+```
+
+## Task 4
+```{r task4}
+
+A5 <- listings |> 
+  dplyr::group_by(city) |> 
+  dplyr::arrange(desc(estimated_revenue_l365d)) |> 
+  dplyr::mutate(rank = dplyr::row_number()) |> # add a column to show where that listing ranks
+  dplyr::mutate(cutoff = ceiling(0.10 * dplyr::n())) |>  # add the cutoff 
+  dplyr::mutate(in_top_10 = rank <= cutoff) |> # check if the rank is above or below the cutoff
+  dplyr::filter(city == "Columbus") |> 
+  dplyr::summarize( #calculate the revenue by the entire columbus and top 10% columbus
+    total_rev = sum(estimated_revenue_l365d),
+    top_10_rev = sum(estimated_revenue_l365d[in_top_10]),
+    top_rev_pct = (top_10_rev / total_rev) * 100
+  )
+A5
+```
+
+## Task 5
+```{r task5}
+
+task5filtered <- listings |> 
+  dplyr::filter(room_type == "Entire home/apt") |> 
+  dplyr::left_join(dplyr::filter(availability,availability$month =="2026-10"), by = "id") |> # Joining table on the specific month
+  dplyr::mutate(mostly_taken = nights_available < 0.5 * nights_in_month) |> 
+  dplyr::group_by(city) |> 
+  dplyr::summarize(
+    mostly_taken_ratio = mean(mostly_taken, na.rm = TRUE) # calculating the required ratio
+  ) |> 
+  dplyr::arrange(mostly_taken_ratio)
+A6 <- task5filtered[[1]][[1]]
+A7 <- task5filtered[[2]][[1]]
+A6
+A7
+```
+
+## Task 6
+```{r task6}
+
+# Joining tables and filtering and arranging
+task6filtered <- listings |> 
+  dplyr::left_join(reviews, by = "id") |> 
+  dplyr::filter(month >= "2025-07", month <= "2026-06") |> 
+  dplyr::group_by(city,month) |> 
+  dplyr::summarize(n_reviews = dplyr::n(), .groups = "drop") |> 
+  dplyr::filter(city == "Twin Cities") |> 
+  dplyr::arrange(desc(n_reviews))
+
+#identifying busiest and quietest months
+busiest <- task6filtered |> head(1)
+quietest <- task6filtered |> tail(1)
+
+
+A8 <- busiest$month
+A8
+
+A9 = busiest$n_reviews / quietest$n_reviews
+A9
+
+```
+
+## Task 7
+```{r task7}
+# Organize superhost classification and add median calculations
+task7 <- listings |> 
+  dplyr::filter(room_type =="Entire home/apt",!is.na(host_is_superhost)) |> 
+  dplyr::group_by(city, host_is_superhost) |> 
+  dplyr::summarize(
+    median_price = median(price, na.rm = TRUE),
+    median_review = median(review_scores_rating, na.rm = TRUE),
+    .groups = "drop_last"
+  )
+
+#subsetting superhost and otherhost info
+superhost <- task7 |> 
+  dplyr::filter(host_is_superhost == "t")
+other_host <- task7 |> 
+  dplyr::filter(host_is_superhost == "f")
+
+# Calculating premium
+B1 <- superhost |> 
+  dplyr::inner_join(other_host, by = "city") |> 
+  dplyr::mutate(
+    premium = median_price.x - median_price.y
+  ) |> 
+  dplyr::select(city,premium)
+B1
+```
+
+
+## Task 8
+```{r task8}
+
+# lost listings per city (after anti_join)
+lost_by_city <- listings |> 
+  dplyr::anti_join(availability, by = "id") |> 
+  dplyr::count(city, name = "lost_listings")
+
+A10 <- lost_by_city$lost_listings |>  sum()
+A10
+
+
+```
+
+
+
