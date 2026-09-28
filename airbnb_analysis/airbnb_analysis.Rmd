@@ -40,6 +40,14 @@ A2<-listings_with_counts |> dplyr::filter(city == "Chicago") |>
   dplyr::summarize(pct=mean(n_listings >= 10) * 100)
 A2
 
+A2.1<-listings_with_counts |> dplyr::filter(city == "Columbus") |> 
+  dplyr::summarize(pct=mean(n_listings >= 10) * 100)
+A2.1
+
+A2.2<-listings_with_counts |> dplyr::filter(city == "Twin Cities") |> 
+  dplyr::summarize(pct=mean(n_listings >= 10) * 100)
+A2.2
+
 ```
 
 ## Task 2
@@ -96,6 +104,35 @@ A5 <- listings |>
     top_rev_pct = (top_10_rev / total_rev) * 100
   )
 A5
+
+A5.1 <- listings |> 
+  dplyr::group_by(city) |> 
+  dplyr::arrange(desc(estimated_revenue_l365d)) |> 
+  dplyr::mutate(rank = dplyr::row_number()) |> # add a column to show where that listing ranks
+  dplyr::mutate(cutoff = ceiling(0.10 * dplyr::n())) |>  # add the cutoff 
+  dplyr::mutate(in_top_10 = rank <= cutoff) |> # check if the rank is above or below the cutoff
+  dplyr::filter(city == "Chicago") |> 
+  dplyr::summarize( #calculate the revenue by the entire columbus and top 10% columbus
+    total_rev = sum(estimated_revenue_l365d),
+    top_10_rev = sum(estimated_revenue_l365d[in_top_10]),
+    top_rev_pct = (top_10_rev / total_rev) * 100
+  )
+A5.1
+
+A5.2 <- listings |> 
+  dplyr::group_by(city) |> 
+  dplyr::arrange(desc(estimated_revenue_l365d)) |> 
+  dplyr::mutate(rank = dplyr::row_number()) |> # add a column to show where that listing ranks
+  dplyr::mutate(cutoff = ceiling(0.10 * dplyr::n())) |>  # add the cutoff 
+  dplyr::mutate(in_top_10 = rank <= cutoff) |> # check if the rank is above or below the cutoff
+  dplyr::filter(city == "Twin Cities") |> 
+  dplyr::summarize( #calculate the revenue by the entire columbus and top 10% columbus
+    total_rev = sum(estimated_revenue_l365d),
+    top_10_rev = sum(estimated_revenue_l365d[in_top_10]),
+    top_rev_pct = (top_10_rev / total_rev) * 100
+  )
+A5.2
+
 ```
 
 ## Task 5
