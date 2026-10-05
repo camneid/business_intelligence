@@ -1,0 +1,52 @@
+---
+title: "ISA:401 HW 07"
+author: "Cameron Neidrich"
+date: "2026-10-05"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    code_download: TRUE
+    number_sections: TRUE
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## HW 07
+
+```{r}
+dept_list = c('Accountancy', 'Economics', 'Entrepreneurship', 'Finance', 'Information%20Systems%20--%20Analytics', 'Marketing', 'Management')
+
+staff_df = data.frame()
+
+for (dept in dept_list){
+  print(dept)
+  department_url = paste0(
+    'https://miamioh.edu/fsb/directory/?up=/query/all/all/',dept,'/all'
+  )
+  
+  webpage = rvest::read_html(department_url)
+  
+  webpage |> rvest::html_elements('td:nth-child(1)') |> rvest::html_text2() -> department_name
+  
+  webpage |> rvest::html_elements('#sidebar-main table td:nth-child(3) strong a') |> rvest::html_text2() -> staff_name
+  
+  webpage |> rvest::html_elements('td:nth-child(3) i') |> rvest::html_text2() -> staff_position
+  
+  webpage |> rvest::html_elements('#sidebar-main table td:nth-child(3) strong a') |> rvest::html_attr("href") -> staff_website
+  
+  df = data.frame(department = department_name, staff_name = staff_name, position = staff_position, website = staff_website)
+  staff_df = rbind(staff_df, df)
+  
+}
+
+staff_df$staff_name <- staff_df$staff_name |> 
+  stringr::str_remove("(Staff|Faculty)sfx\\w*$") |>
+  stringr::str_squish()
+
+head(staff_df,10)
+```
+
