@@ -109,7 +109,7 @@ The website we want to scrape is called: <https://www.planecrashinfo.com/> and i
 year = 2025
 crash_url = paste0('https://www.planecrashinfo.com/', year, '/', year, '.htm')
 
-crash_page = rvest::readhtml(crash_url)
+crash_page = rvest::readhtml(crash_url, encoding = "ISO-8859-1")
 ```
 
 
